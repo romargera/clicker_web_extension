@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Clicker Challenge",
+  "version": "1.0",
+  "description": "A fun clicker game with stats and customization.",
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ],
+  "action": {
+    "default_icon": "icons/icon1.png"  // No default_popup here
+  },
+  "background": {
+    "service_worker": "background.js"  // Background script to handle clicks
+  },
+  "options_page": "options.html",      // Options page for the right-click menu
+  "icons": {
+    "16": "icons/icon1.png",
+    "48": "icons/icon1.png",
+    "128": "icons/icon1.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "onboarding.html"  // Opens onboarding on the first install
+  }
+}
