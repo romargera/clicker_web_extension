@@ -1,7 +1,7 @@
 let clickTimestamps = [];
 let totalClicks = 0;
 let maxSpeed = 0;
-let speedUpdateInterval = null; // To store the interval reference
+let speedUpdateInterval = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   // Load saved clicks, timestamps, and max speed
@@ -50,32 +50,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to start the frequent update for click speed
 function startSpeedUpdate() {
-  // Update the click speed every 200 milliseconds
+  // Update the click speed every second
   speedUpdateInterval = setInterval(() => {
     updateClickSpeed();
-  }, 200); // Updates every 200ms
+  }, 1000); // Updates every second
 }
 
 function updateClickSpeed() {
   const now = Date.now();
-  const oneSecondAgo = now - 1000;  // Set interval to 1 second
+  const oneSecondAgo = now - 1000;  // Time 1 second ago
 
   // Filter clicks that occurred within the last second
   const recentClicks = clickTimestamps.filter(timestamp => timestamp > oneSecondAgo);
   const clicksInLastSecond = recentClicks.length;
 
-  // Calculate max speed (max clicks per second)
+  // Calculate elapsed time in seconds from the first click to now
+  const elapsedTimeInSeconds = (clickTimestamps.length > 1) ? (clickTimestamps[clickTimestamps.length - 1] - clickTimestamps[0]) / 1000 : 1;
+
+  // Calculate average speed (total clicks divided by total time in seconds)
+  const avgSpeed = elapsedTimeInSeconds > 0 ? totalClicks / elapsedTimeInSeconds : 0;
+
+  // Update max speed (max clicks per second)
   if (clicksInLastSecond > maxSpeed) {
     maxSpeed = clicksInLastSecond;
     chrome.storage.local.set({ maxSpeed }); // Save the new max speed
   }
 
-  // Calculate average speed based on the total time since the first click
-  const elapsedTimeInSeconds = (clickTimestamps.length > 1) ? 
-    (clickTimestamps[clickTimestamps.length - 1] - clickTimestamps[0]) / 1000 : 1;
-  const avgSpeed = elapsedTimeInSeconds > 0 ? totalClicks / elapsedTimeInSeconds : 0;
-
-  // Update the UI with max and average speeds
-  document.getElementById('maxSpeed').textContent = maxSpeed;
-  document.getElementById('avgSpeed').textContent = avgSpeed.toFixed(2);
+  // Update only if there were clicks in the last second
+  if (clicksInLastSecond > 0) {
+    // Update the UI with max and average speeds
+    document.getElementById('maxSpeed').textContent = maxSpeed;
+    document.getElementById('avgSpeed').textContent = avgSpeed.toFixed(2);
+  }
 }
