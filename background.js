@@ -1,57 +1,52 @@
 let clickCount = 0;
 let clickTimestamps = [];
+let unsavedClickCount = 0;
+const SAVE_INTERVAL = 10; // Save after every 10 clicks or a few seconds
 
-// Load data from storage when extension starts
+// Load data from storage when the extension starts
 chrome.runtime.onInstalled.addListener(() => {
+  loadDataFromStorage();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  loadDataFromStorage();
+});
+
+function loadDataFromStorage() {
   chrome.storage.local.get(['clickCount', 'clickTimestamps'], (result) => {
     clickCount = result.clickCount || 0;
     clickTimestamps = result.clickTimestamps || [];
-    console.log('Data loaded on install:', clickCount, clickTimestamps);
+    console.log('Data loaded:', clickCount, clickTimestamps);
   });
-});
+}
 
 chrome.action.onClicked.addListener(() => {
-  // Increment the click count and store the timestamp
+  // Increment the click count
   clickCount++;
+  unsavedClickCount++;
   clickTimestamps.push(Date.now());
 
-  // Save the updated data to chrome.storage.local
-  chrome.storage.local.set({ clickCount, clickTimestamps }, () => {
-    console.log('Click count and timestamps saved:', clickCount, clickTimestamps);
-  });
+  // Periodically save data to storage
+  if (unsavedClickCount >= SAVE_INTERVAL) {
+    saveDataToStorage();
+    unsavedClickCount = 0; // Reset unsaved count after saving
+  }
 
-  // Update badge display with click count
+  // Update badge with the click count
   const displayCount = clickCount > 999 ? '999+' : clickCount.toString();
   chrome.action.setBadgeText({ text: displayCount });
 });
 
-// Context menu setup
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "openStats",
-    title: "My Stats",
-    contexts: ["action"]
+function saveDataToStorage() {
+  chrome.storage.local.set({ clickCount, clickTimestamps }, () => {
+    console.log('Click count and timestamps saved:', clickCount);
   });
+}
 
-  chrome.contextMenus.create({
-    id: "openOptions",
-    title: "Open Clicker Options",
-    contexts: ["action"]
-  });
-});
-
-// Handle right-click context menu
-chrome.contextMenus.onClicked.addListener((info) => {
-  if (info.menuItemId === "openOptions") {
-    chrome.runtime.openOptionsPage();
-  } else if (info.menuItemId === "openStats") {
-    chrome.storage.local.get(['clickCount', 'maxSpeed', 'avgSpeed'], (data) => {
-      const statsMessage = `
-        Total Clicks: ${data.clickCount || 0}
-        Max Speed: ${data.maxSpeed || 0} clicks/sec
-        Average Speed: ${data.avgSpeed || 0} clicks/sec
-      `;
-      alert(statsMessage);
-    });
+// Save remaining clicks every 5 seconds in case the user closes the browser
+setInterval(() => {
+  if (unsavedClickCount > 0) {
+    saveDataToStorage();
+    unsavedClickCount = 0;
   }
-});
+}, 5000); // 5 seconds backup save
