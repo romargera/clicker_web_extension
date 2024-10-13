@@ -52,16 +52,16 @@ setInterval(() => {
 }, 5000); // 5 seconds backup save
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "openStats",
-    title: "Show Stats",
-    contexts: ["action"] // Only show when right-clicking on the extension icon
-  });
+  // chrome.contextMenus.create({
+  //   id: "openStats",
+  //   title: "Show Stats",
+  //   contexts: ["action"] // Only show when right-clicking on the extension icon
+  // });
 
   // Other context menu for opening options page
   chrome.contextMenus.create({
     id: "openOptions",
-    title: "Open Clicker Options",
+    title: "Show Stats",
     contexts: ["action"]
   });
 });
