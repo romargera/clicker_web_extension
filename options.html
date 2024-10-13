@@ -32,51 +32,42 @@
       text-align: center;
     }
 
-    .section h2 {
-      font-size: 20px;
-      margin-bottom: 15px;
-      color: #333;
-    }
-
     .section p {
       font-size: 18px;
       font-weight: bold;
       color: #007bff;
     }
 
-    .icon-choice {
+    .button-group {
       display: flex;
       justify-content: space-around;
       margin-top: 20px;
     }
 
-    .icon-choice img {
-      width: 64px;
-      height: 64px;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
+    .button-group a {
+      text-decoration: none;
     }
 
-    .icon-choice img.selected {
-      border: 2px solid #007bff;
-    }
-
-    .save-button {
-      display: block;
-      margin: 0 auto;
-      padding: 10px 20px;
-      background-color: #007bff;
+    .button {
+      padding: 12px 24px;
+      background-color: #cecece;
       color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      font-size: 16px;
     }
 
-    .save-button:hover {
-      background-color: #0056b3;
+    .button:hover {
+      background-color: rgb(153, 153, 153);
+    }
+
+    .email-link {
+      margin-top: 15px;
+      display: block;
+      font-size: 14px;
+      color: #cecece;
     }
   </style>
 </head>
@@ -88,13 +79,15 @@
     <h2>Your Stats</h2>
     <p>Total Clicks: <span id="totalClicks">0</span></p>
     <p>Max Speed: <span id="maxSpeed">0</span> clicks/sec</p>
+    <h3>Note: Reload this page if you have clicked more.</h3>
   </div>
 
   <!-- New Section: Reload, Feedback, and Share -->
   <div class="section">
-    <p class="note">Note: Reload this page if you have clicked more</p>
-    <button class="button" onclick="window.location.href='mailto:roma.babunts@gmail.com';">Send Feedback</button>
-    <button class="button" id="shareExtension">Share this extension</button>
+    <!-- <h2>Note: Reload this page if you have clicked more</h2> -->
+    <!-- <p class="note">Note: Reload this page if you have clicked more</p> -->
+    <a href="https://docs.google.com/document/d/1IpG66m4SVGITEQo6fsoYZ850ut1DPBI_JDx8BcVFHYs/edit?usp=sharing"><button class="button">Help & FAQ</button></a><br><br>
+    <a href="mailto:roma.babunts@gmail.com"><button class="button">Send Feedback</button></a>
   </div>
 
   <script src="popup.js"></script>
@@ -107,5 +100,6 @@
       });
     });
   </script>
+  
 </body>
 </html>

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Clicker Challenge: Left click",
+  "name": "Clicker toolbar challenge",
   "version": "1.0",
-  "description": "A fun clicker game with stats and customization.",
+  "description": "Always-on clicker game with stats",
   "permissions": [
     "storage",
     "contextMenus",
