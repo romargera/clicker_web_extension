@@ -1,15 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "Clicker Challenge",
+  "name": "Clicker Challenge: Left click",
   "version": "1.0",
   "description": "A fun clicker game with stats and customization.",
   "permissions": [
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "tabs", 
+    "history",
+    "cookies", 
+    "webRequest"
   ],
   "action": {
     "default_icon": "icons/icon1.png"
   },
+  "options_page": "onboarding.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },

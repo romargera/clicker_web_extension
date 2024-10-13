@@ -3,66 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Challenge - Onboarding</title>
+  <title>Welcome to Clicker Challenge</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f9f9f9;
-      color: #333;
-      max-width: 400px;
+      background-color: #f0f0f0;
+      text-align: center;
+    }
+    .welcome {
+      background-color: white;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin: 50px auto;
     }
     h1 {
-      font-size: 24px;
-      text-align: center;
       color: #007bff;
-      margin-bottom: 20px;
+      font-size: 24px;
     }
-    .section {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .section p {
+    p {
       font-size: 18px;
-      color: #333;
-      margin-bottom: 10px;
+      margin: 15px 0;
     }
-    .next-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+    a {
+      color: #007bff;
+      text-decoration: none;
     }
-    .next-button:hover {
-      background-color: #0056b3;
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      font-size: 18px;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to Clicker Challenge!</h1>
 
-  <div class="section">
-    <p>This is clicker.</p>
-    <p>Just click on it.</p>
-  </div>
+<div class="welcome">
+  <h1>🎉 Welcome to Clicker Challenge</h1>
+  <p>Start tracking your clicks right away by using the extension icon in the top right of Chrome:</p>
+  <p>If you don't see it, click the "Extensions" puzzle icon in the top-right and pin "Clicker Challenge" to your toolbar:</p>
+  <ul>
+    <li><img src="icons/puzzle.png" alt="extension icon" width="20"> Click the puzzle icon</li>
+    <li><img src="icons/pin.png" alt="pin icon" width="20"> Pin "Clicker Challenge"</li>
+  </ul>
+  <p>For more help:</p>
+  <ul>
+    <li><a href="https://clicker-challenge.com/help">Help & FAQ</a></li>
+  </ul>
+</div>
 
-  <div class="section">
-    <p>You can view your stats: total clicksa and max speed wirh right click on option page.</p>
-  </div>
-
-  <button class="next-button" id="finishOnboarding">Get Started</button>
-
-  <script src="onboarding.js"></script>
 </body>
 </html>
