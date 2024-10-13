@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load saved clicks, timestamps, and max speed
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], (result) => {
     totalClicks = result.clickCount || 0;
-    clickTimestamps = result.clickTimestamps || [];
+    clickTtimestamps = result.clickTimestamps || [];
     maxSpeed = result.maxSpeed || 0;  // Load saved max speed
     
     document.getElementById('totalClicks').textContent = totalClicks;
@@ -64,12 +64,6 @@ function updateClickSpeed() {
   const recentClicks = clickTimestamps.filter(timestamp => timestamp > oneSecondAgo);
   const clicksInLastSecond = recentClicks.length;
 
-  // Calculate elapsed time in seconds from the first click to now
-  const elapsedTimeInSeconds = (clickTimestamps.length > 1) ? (clickTimestamps[clickTimestamps.length - 1] - clickTimestamps[0]) / 1000 : 1;
-
-  // Calculate average speed (total clicks divided by total time in seconds)
-  const avgSpeed = elapsedTimeInSeconds > 0 ? totalClicks / elapsedTimeInSeconds : 0;
-
   // Update max speed (max clicks per second)
   if (clicksInLastSecond > maxSpeed) {
     maxSpeed = clicksInLastSecond;
@@ -78,8 +72,7 @@ function updateClickSpeed() {
 
   // Update only if there were clicks in the last second
   if (clicksInLastSecond > 0) {
-    // Update the UI with max and average speeds
+    // Update the UI with max speed
     document.getElementById('maxSpeed').textContent = maxSpeed;
-    document.getElementById('avgSpeed').textContent = avgSpeed.toFixed(2);
   }
 }

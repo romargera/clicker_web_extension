@@ -44,22 +44,38 @@
       color: #007bff;
     }
 
-    .ignore-clicks {
-      padding-top: 20px;
+    .icon-choice {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
     }
 
-    .button {
+    .icon-choice img {
+      width: 64px;
+      height: 64px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .icon-choice img.selected {
+      border: 2px solid #007bff;
+    }
+
+    .save-button {
+      display: block;
+      margin: 0 auto;
       padding: 10px 20px;
-      margin: 10px;
       background-color: #007bff;
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s ease;
     }
 
-    .button:hover {
+    .save-button:hover {
       background-color: #0056b3;
     }
   </style>
@@ -72,16 +88,24 @@
     <h2>Your Stats</h2>
     <p>Total Clicks: <span id="totalClicks">0</span></p>
     <p>Max Speed: <span id="maxSpeed">0</span> clicks/sec</p>
-    <p>Average Speed: <span id="avgSpeed">0</span> clicks/sec</p>
   </div>
 
-  <!-- Ignore clicks in this section -->
-  <div class="section ignore-clicks">
+  <!-- New Section: Reload, Feedback, and Share -->
+  <div class="section">
     <p class="note">Note: Reload this page if you have clicked more</p>
     <button class="button" onclick="window.location.href='mailto:roma.babunts@gmail.com';">Send Feedback</button>
     <button class="button" id="shareExtension">Share this extension</button>
   </div>
 
   <script src="popup.js"></script>
+  <script>
+    // Sharing functionality for the extension
+    document.getElementById('shareExtension').addEventListener('click', () => {
+      const shareLink = 'https://example.com/your-extension';
+      navigator.clipboard.writeText(shareLink).then(() => {
+        alert('Extension link copied to clipboard!');
+      });
+    });
+  </script>
 </body>
 </html>
