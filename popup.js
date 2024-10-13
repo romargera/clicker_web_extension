@@ -9,36 +9,30 @@ document.addEventListener('DOMContentLoaded', () => {
     clickTimestamps = result.clickTimestamps || [];
     maxSpeed = result.maxSpeed || 0;  // Load saved max speed
     
-    console.log("Loaded total clicks from storage: ", totalClicks);
-    console.log("Loaded max speed from storage: ", maxSpeed);
-    
     document.getElementById('totalClicks').textContent = totalClicks;
     document.getElementById('maxSpeed').textContent = maxSpeed;
 
-    // Update click speed
     updateClickSpeed();
   });
 
-  // Disable counting clicks on specific elements (buttons, etc.)
+  // Only count clicks in the main click area
   document.body.addEventListener('click', (event) => {
     const target = event.target;
 
-    // Ignore clicks on the buttons and the container of the buttons
-    if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.closest('.ignore-clicks')) {
-      return; // Do not count click
+    // List of classes or tags we want to exclude from counting clicks
+    const nonCountableElements = ['BUTTON', 'A', '.ignore-clicks', 'INPUT', 'TEXTAREA'];
+
+    // If the clicked element or its parent has any of the non-countable classes or tags, ignore it
+    if (nonCountableElements.includes(target.tagName) || target.closest('.ignore-clicks')) {
+      return; // Ignore clicks on non-countable elements
     }
 
     totalClicks++;
     clickTimestamps.push(Date.now());
 
-    console.log("Click registered. Total clicks: ", totalClicks);
+    // Save the total clicks and timestamps
+    chrome.storage.local.set({ clickCount: totalClicks, clickTimestamps });
 
-    // Save the total clicks and timestamps in chrome.storage
-    chrome.storage.local.set({ clickCount: totalClicks, clickTimestamps }, () => {
-      console.log("Total clicks saved: ", totalClicks);
-    });
-
-    // Update stats
     document.getElementById('totalClicks').textContent = totalClicks;
     updateClickSpeed();
   });
@@ -46,28 +40,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updateClickSpeed() {
   const now = Date.now();
-  const oneSecondAgo = now - 1000;
+  const oneSecondAgo = now - 1000;  // Set interval to 1 second
 
   // Filter clicks that occurred within the last second
   const recentClicks = clickTimestamps.filter(timestamp => timestamp > oneSecondAgo);
   const clicksInLastSecond = recentClicks.length;
 
-  console.log("Clicks in the last second: ", clicksInLastSecond);
-
-  // Update max speed (clicks per second)
   if (clicksInLastSecond > maxSpeed) {
     maxSpeed = clicksInLastSecond;
-    chrome.storage.local.set({ maxSpeed }, () => {
-      console.log("Max speed updated and saved: ", maxSpeed);
-    });
+    chrome.storage.local.set({ maxSpeed });
   }
 
-  // Calculate average speed based on time since first click (total time in seconds)
-  const elapsedTimeInSeconds = (clickTimestamps.length > 1) ? 
+  const elapsedTimeInSeconds = clickTimestamps.length > 1 ? 
     (clickTimestamps[clickTimestamps.length - 1] - clickTimestamps[0]) / 1000 : 1;
-  const avgSpeed = totalClicks > 0 ? totalClicks / elapsedTimeInSeconds : 0;
+  const avgSpeed = elapsedTimeInSeconds > 0 ? totalClicks / elapsedTimeInSeconds : 0;
 
-  // Update UI with max and average speeds (clicks per second)
   document.getElementById('maxSpeed').textContent = maxSpeed;
   document.getElementById('avgSpeed').textContent = avgSpeed.toFixed(2);
 }

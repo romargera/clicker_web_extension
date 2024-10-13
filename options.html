@@ -44,8 +44,23 @@
       color: #007bff;
     }
 
-    .ignore-clicks { 
-      padding-top: 20px; /* Add some spacing */
+    .ignore-clicks {
+      padding-top: 20px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -60,7 +75,7 @@
     <p>Average Speed: <span id="avgSpeed">0</span> clicks/sec</p>
   </div>
 
-  <!-- New Section: Reload, Feedback, and Share -->
+  <!-- Ignore clicks in this section -->
   <div class="section ignore-clicks">
     <p class="note">Note: Reload this page if you have clicked more</p>
     <button class="button" onclick="window.location.href='mailto:roma.babunts@gmail.com';">Send Feedback</button>
@@ -68,14 +83,5 @@
   </div>
 
   <script src="popup.js"></script>
-  <script>
-    // Sharing functionality for the extension
-    document.getElementById('shareExtension').addEventListener('click', () => {
-      const shareLink = 'https://example.com/your-extension';
-      navigator.clipboard.writeText(shareLink).then(() => {
-        alert('Extension link copied to clipboard!');
-      });
-    });
-  </script>
 </body>
 </html>

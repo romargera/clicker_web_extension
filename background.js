@@ -50,3 +50,38 @@ setInterval(() => {
     unsavedClickCount = 0;
   }
 }, 5000); // 5 seconds backup save
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "openStats",
+    title: "Show Stats",
+    contexts: ["action"] // Only show when right-clicking on the extension icon
+  });
+
+  // Other context menu for opening options page
+  chrome.contextMenus.create({
+    id: "openOptions",
+    title: "Open Clicker Options",
+    contexts: ["action"]
+  });
+});
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  if (info.menuItemId === "openOptions") {
+    chrome.runtime.openOptionsPage(); // Open options.html on right-click
+  } else if (info.menuItemId === "openStats") {
+    chrome.storage.local.get(['clickCount', 'maxSpeed', 'avgSpeed'], (data) => {
+      const statsMessage = `
+        Total Clicks: ${data.clickCount || 0}
+        Max Speed: ${data.maxSpeed || 0} clicks/sec
+        Average Speed: ${data.avgSpeed || 0} clicks/sec
+      `;
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icons/icon1.png",
+        title: "Clicker Challenge Stats",
+        message: statsMessage
+      });
+    });
+  }
+});
