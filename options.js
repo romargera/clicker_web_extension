@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // GA4 event: options page opened
+  // GA4 event: options page opened (page_view)
   sendAnalyticsEvent('options_opened', { page: 'options' });
+  sendAnalyticsEvent('session_start', { page: 'options' });
+  sendAnalyticsEvent('user_engagement', { page: 'options', event: 'open' });
 
   const totalClicksEl = document.getElementById('totalClicks');
   const maxSpeedEl = document.getElementById('maxSpeed');
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.runtime.sendMessage({ type: 'icon_click' });
     // GA4: user clicked icon on options page
     sendAnalyticsEvent('icon_click_on_options', { source: 'options' });
+    sendAnalyticsEvent('user_engagement', { page: 'options', event: 'icon_click' });
   });
 
   // Reset stats handler + GA4 event for reset
@@ -49,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.runtime.sendMessage({ type: 'reset_stats' }, (resp) => {
         if (resp && resp.ok) {
           sendAnalyticsEvent('reset_stats', { source: 'options' });
+          sendAnalyticsEvent('user_engagement', { page: 'options', event: 'reset_stats' });
         }
       });
     }
