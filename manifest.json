@@ -10,10 +10,10 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon1.png",
-      "32": "icon1.png",
-      "48": "icon1.png",
-      "128": "icon1.png"
+      "16": "icons/icon1.png",
+      "32": "icons/icon1.png",
+      "48": "icons/icon1.png",
+      "128": "icons/icon1.png"
     }
   },
   "background": {
@@ -23,15 +23,15 @@
     "https://www.google-analytics.com/"
   ],
   "icons": {
-    "16": "icon1.png",
-    "32": "icon1.png",
-    "48": "icon1.png",
-    "128": "icon1.png"
+    "16": "icons/icon1.png",
+    "32": "icons/icon1.png",
+    "48": "icons/icon1.png",
+    "128": "icons/icon1.png"
   },
   "options_page": "options.html",
   "web_accessible_resources": [
     {
-      "resources": ["icon1.png"],
+      "resources": ["icons/icon1.png"],
       "matches": ["<all_urls>"]
     }
   ],
