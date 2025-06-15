@@ -3,51 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <title>Clicker Challenge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+    }
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 6px 32px 0 rgba(50, 115, 220, 0.15), 0 1.5px 5px 0 rgba(0,0,0,0.04);
+      padding: 32px 28px 28px 28px;
+      min-width: 350px;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow .2s;
+    }
+    .card:hover {
+      box-shadow: 0 10px 40px 0 rgba(50,115,220,0.25);
+    }
+    .icon-preview {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 22px;
+      margin-top: 5px;
+      border-radius: 18px;
+      background: #f0f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
+      transition: transform .15s;
+      cursor: default;
+    }
+    .icon-preview img {
+      width: 60px;
+      height: 60px;
+      display: block;
+    }
+    h1 {
+      color: #1653c2;
+      font-size: 2.2em;
+      margin: 0 0 6px 0;
+      font-weight: bold;
+      letter-spacing: -1px;
+      text-align: center;
+    }
+    .stats {
+      width: 100%;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      background: #f6f9fe;
+      border-radius: 14px;
+      padding: 18px 0 14px 0;
+      text-align: center;
+      box-shadow: 0 1px 5px rgba(50,115,220,0.03);
+      font-size: 1.18em;
+    }
+    .stats-label {
+      color: #6c8ebf;
+      font-weight: 500;
+      font-size: 1em;
       margin: 0;
-      padding: 20px;
-      background-color: #f9f9f9;
-      color: #333;
-      max-width: 400px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      letter-spacing: .5px;
     }
-    .icon-choice img {
-      width: 48px; height: 48px; margin: 4px;
-      border: 2px solid transparent; border-radius: 8px;
-      cursor: pointer; transition: border 0.2s;
+    .stats-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin: 0 0 6px 0;
+      color: #244aad;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      min-width: 36px;
     }
-    .icon-choice img.selected {
-      border: 2px solid #007bff;
-      box-shadow: 0 0 8px #007bff55;
+    .tip {
+      color: #b5b5b5;
+      margin-top: 14px;
+      font-size: 0.98em;
+      text-align: center;
+      letter-spacing: .2px;
     }
-    #clickIcon { display:block; margin:0 auto 20px auto; width:64px; cursor:pointer; }
-    #reloadButton { display:none; margin-top:10px;}
+    .button-link {
+      background: #1653c2;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 22px;
+      font-size: 1.1em;
+      margin-top: 26px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.18s, transform 0.13s;
+      box-shadow: 0 1px 6px 0 rgba(22,83,194,0.09);
+    }
+    .button-link:hover {
+      background: #2e73ec;
+      transform: translateY(-2px) scale(1.03);
+    }
   </style>
 </head>
 <body>
-  <div class="section">
-    <!-- Clickable icon -->
-    <img id="clickIcon" src="icons/icon1.png" title="Click me!">
+  <div class="card">
+    <div class="icon-preview">
+      <img src="icons/icon1.png" alt="Extension icon">
+    </div>
+    <h1>Clicker Challenge</h1>
+    <div class="stats">
+      <p class="stats-label">Total Clicks</p>
+      <span class="stats-value" id="totalClicks">0</span>
+      <p class="stats-label">Max Speed</p>
+      <span class="stats-value" id="maxSpeed">0</span> <span class="stats-label">clicks/sec</span>
+    </div>
+    <div class="tip">
+      Click the extension icon in the toolbar to increase your score!<br>
+      Your progress is saved locally.
+    </div>
+    <button class="button-link" onclick="chrome.runtime.openOptionsPage()">Settings</button>
   </div>
-  <h1>Clicker Challenge</h1>
-
-  <div class="section icon-choice" id="iconChoice">
-    <h2>Choose your icon</h2>
-    <img src="icons/icon1.png" data-icon="icons/icon1.png">
-    <img src="icons/icon2.png" data-icon="icons/icon2.png">
-    <img src="icons/icon3.png" data-icon="icons/icon3.png">
-  </div>
-
-  <div class="section">
-    <h2>Your Stats</h2>
-    <p>Total Clicks: <span id="totalClicks">0</span></p>
-    <p>Max Speed: <span id="maxSpeed">0</span> clicks/sec</p>
-    <h3 id="errorMsg" style="color:red; display:none;">Error loading stats. <button id="reloadButton">Reload</button></h3>
-  </div>
-
   <script src="ga.js"></script>
   <script src="options.js"></script>
 </body>

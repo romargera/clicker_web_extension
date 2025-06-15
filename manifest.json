@@ -7,34 +7,20 @@
     "storage",
     "contextMenus"
   ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/icon1.png",
-      "32": "icons/icon1.png",
-      "48": "icons/icon1.png",
-      "128": "icons/icon1.png"
-    }
-  },
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": [
-    "https://www.google-analytics.com/"
-  ],
   "icons": {
     "16": "icons/icon1.png",
     "32": "icons/icon1.png",
     "48": "icons/icon1.png",
     "128": "icons/icon1.png"
   },
-  "options_page": "options.html",
-  "web_accessible_resources": [
-    {
-      "resources": ["icons/icon1.png"],
-      "matches": ["<all_urls>"]
-    }
+  "action": {},  // No popup
+  "host_permissions": [
+    "https://www.google-analytics.com/"
   ],
+  "options_page": "options.html",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   }
