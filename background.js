@@ -1,11 +1,7 @@
 importScripts('ga.js');
 
-let clickCount = 0;
-let clickTimestamps = [];
-let maxSpeed = 0;
-
-// Restore stats on startup
-chrome.runtime.onStartup.addListener(loadDataFromStorage);
+// Badge color
+chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
 
 chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
@@ -20,21 +16,19 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 });
 
-chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
-
 // Handle toolbar icon click
 chrome.action.onClicked.addListener(() => {
   registerClick('toolbar');
 });
 
-// Handle icon click from options page
+// Handle icon click from options page or reset
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message && message.type === 'icon_click') {
-    registerClick('options');
-    sendResponse({ ok: true });
+    registerClick('options').then(() => sendResponse({ ok: true }));
+    return true; // keep message channel open for async
   } else if (message && message.type === 'reset_stats') {
-    resetStats();
-    sendResponse({ ok: true });
+    resetStats().then(() => sendResponse({ ok: true }));
+    return true;
   }
 });
 
@@ -45,51 +39,54 @@ chrome.contextMenus.onClicked.addListener((info) => {
   }
 });
 
-function registerClick(from) {
+function updateBadge(count) {
+  const displayCount = count > 999 ? '999+' : count.toString();
+  chrome.action.setBadgeText({ text: displayCount });
+}
+
+// Always loads latest stats, updates, and writes back to storage
+async function registerClick(from) {
+  // Get last stats from storage
+  const result = await new Promise(resolve => chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], resolve));
+  let clickCount = result.clickCount || 0;
+  let clickTimestamps = result.clickTimestamps || [];
+  let maxSpeed = result.maxSpeed || 0;
+
   clickCount++;
   const now = Date.now();
   clickTimestamps.push(now);
 
-  // Remove timestamps older than 10 seconds (to avoid memory leak)
+  // Remove old timestamps (keep last 10s only, not total!)
   clickTimestamps = clickTimestamps.filter(ts => ts > now - 10000);
 
-  // Calculate true speed (clicks per second with precision)
+  // Calculate speed (real, float, two decimals)
   const recent = clickTimestamps.filter(ts => ts > now - 1000);
   let speed = 0;
   if (recent.length > 1) {
-    const timeWindow = (recent[recent.length - 1] - recent[0]) / 1000;
-    speed = timeWindow > 0 ? (recent.length - 1) / timeWindow : recent.length;
+    const windowMs = recent[recent.length - 1] - recent[0];
+    speed = windowMs > 0 ? (recent.length - 1) / (windowMs / 1000) : recent.length;
   } else {
     speed = recent.length;
   }
   speed = Number(speed.toFixed(2));
   if (speed > maxSpeed) maxSpeed = speed;
 
+  // Save all back to storage
   chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed });
-  updateBadge();
+  updateBadge(clickCount);
   sendAnalyticsEvent('click', { speed, total_clicks: clickCount, from });
 }
 
-function updateBadge() {
-  const displayCount = clickCount > 999 ? '999+' : clickCount.toString();
-  chrome.action.setBadgeText({ text: displayCount });
-}
-
-function loadDataFromStorage() {
-  chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], (result) => {
-    clickCount = result.clickCount || 0;
-    clickTimestamps = result.clickTimestamps || [];
-    maxSpeed = result.maxSpeed || 0;
-    updateBadge();
-  });
-}
-
-// Reset all stats (when "reset" is clicked)
-function resetStats() {
-  clickCount = 0;
-  maxSpeed = 0;
-  clickTimestamps = [];
+// Also loads stats before reset (for consistency)
+async function resetStats() {
   chrome.storage.local.set({ clickCount: 0, clickTimestamps: [], maxSpeed: 0 });
-  updateBadge();
+  updateBadge(0);
   sendAnalyticsEvent('reset_stats', {});
 }
+
+// On startup (for badge)
+chrome.runtime.onStartup.addListener(() => {
+  chrome.storage.local.get(['clickCount'], (result) => {
+    updateBadge(result.clickCount || 0);
+  });
+});
