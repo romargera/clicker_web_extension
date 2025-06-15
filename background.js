@@ -1,21 +1,18 @@
 importScripts('ga.js');
 
-// Initialize click state
 let clickCount = 0;
 let clickTimestamps = [];
 let maxSpeed = 0;
 let unsavedClickCount = 0;
 const SAVE_INTERVAL = 10;
-let uniqueID;
 let dailySessions = [];
 let dailyClicksSessions = [];
 
-// Load storage data on startup
-chrome.runtime.onStartup.addListener(() => {
-  loadDataFromStorage();
-});
+// Set badge background color (blue)
+chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
 
-// On install create menu + log event
+// On startup or install, load stats, set menu, and badge
+chrome.runtime.onStartup.addListener(loadDataFromStorage);
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "openOptions",
@@ -23,10 +20,23 @@ chrome.runtime.onInstalled.addListener(() => {
     contexts: ["action"]
   });
   sendAnalyticsEvent('extension_installed');
+  updateBadge();
 });
 
-// Handle toolbar click
+// Left click on toolbar icon
 chrome.action.onClicked.addListener(() => {
+  handleClick('toolbar');
+});
+
+// Click from options page icon
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message && message.type === 'icon_click') {
+    handleClick('options');
+    sendResponse({ ok: true });
+  }
+});
+
+function handleClick(origin) {
   clickCount++;
   unsavedClickCount++;
   const now = Date.now();
@@ -41,20 +51,15 @@ chrome.action.onClicked.addListener(() => {
     unsavedClickCount = 0;
   }
 
+  updateBadge();
+  sendAnalyticsEvent('click', { speed, total_clicks: clickCount, from: origin });
+}
+
+function updateBadge() {
   const displayCount = clickCount > 999 ? '999+' : clickCount.toString();
   chrome.action.setBadgeText({ text: displayCount });
+}
 
-  sendAnalyticsEvent('click', { speed, total_clicks: clickCount });
-});
-
-// Open options from context menu
-chrome.contextMenus.onClicked.addListener((info) => {
-  if (info.menuItemId === "openOptions") {
-    chrome.runtime.openOptionsPage();
-  }
-});
-
-// Load values from local storage
 function loadDataFromStorage() {
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed', 'dailySessions', 'dailyClicksSessions'], (result) => {
     clickCount = result.clickCount || 0;
@@ -62,10 +67,10 @@ function loadDataFromStorage() {
     maxSpeed = result.maxSpeed || 0;
     dailySessions = result.dailySessions || [];
     dailyClicksSessions = result.dailyClicksSessions || [];
+    updateBadge();
   });
 }
 
-// Track daily sessions
 function updateDailySessions(currentTime) {
   const today = new Date().toDateString();
   const lastSession = dailySessions[dailySessions.length - 1];
@@ -79,20 +84,15 @@ function updateDailySessions(currentTime) {
   }
 }
 
-// Compute speed
 function calculateCurrentSpeed() {
   const now = Date.now();
-  const oneSecondAgo = now - 1000;
-  const recentClicks = clickTimestamps.filter(t => t > oneSecondAgo);
-  return recentClicks.length;
+  return clickTimestamps.filter(t => t > now - 1000).length;
 }
 
-// Save data to local storage
 function saveDataToStorage() {
   chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed, dailySessions, dailyClicksSessions });
 }
 
-// Backup save on interval
 setInterval(() => {
   if (unsavedClickCount > 0) {
     saveDataToStorage();
