@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconClickArea = document.getElementById('iconClickArea');
   const iconClickCount = document.getElementById('iconClickCount');
   const hoverDialog = document.getElementById('hoverDialog');
+  const resetLink = document.getElementById('resetStatsLink');
   let hoverDialogShown = false;
 
-  // Show "click me" hover dialog only once for 3s, then never again
+  // Show "click me" hover dialog once for 3s, then never again
   if (!localStorage.getItem('iconHoverDialogHidden')) {
     iconClickArea.addEventListener('mouseenter', () => {
       if (!hoverDialogShown) {
@@ -31,19 +32,30 @@ document.addEventListener('DOMContentLoaded', () => {
     iconClickArea.style.transform = '';
   });
 
-  // Register click via background
+  // Click handler (via background)
   iconClickArea.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'icon_click' });
-    // (No session counter, just update total on next interval)
   });
 
-  // Update displayed stats every 0.1s for live sync
+  // Reset stats handler
+  resetLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Are you sure you want to reset your stats?')) {
+      chrome.runtime.sendMessage({ type: 'reset_stats' }, (resp) => {
+        if (resp && resp.ok) {
+          // UI will auto-update by next interval
+        }
+      });
+    }
+  });
+
+  // Update stats every 0.1s, always from storage
   setInterval(() => {
     chrome.storage.local.get(['clickCount', 'maxSpeed'], (result) => {
       const clicks = result.clickCount || 0;
-      const speed = (result.maxSpeed || 0).toFixed(2);
+      const speed = (typeof result.maxSpeed === "number") ? result.maxSpeed.toFixed(2) : "0.00";
       totalClicksEl.textContent = clicks;
-      iconClickCount.textContent = clicks; // sync badge with total clicks
+      iconClickCount.textContent = clicks;
       maxSpeedEl.textContent = speed;
     });
   }, 100);

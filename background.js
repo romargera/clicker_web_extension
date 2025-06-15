@@ -3,10 +3,10 @@ importScripts('ga.js');
 let clickCount = 0;
 let clickTimestamps = [];
 let maxSpeed = 0;
-let unsavedClickCount = 0;
-const SAVE_INTERVAL = 10;
 
-// On install: add context menu and open options page
+// Restore stats on startup
+chrome.runtime.onStartup.addListener(loadDataFromStorage);
+
 chrome.runtime.onInstalled.addListener((details) => {
   chrome.contextMenus.create({
     id: "openOptions",
@@ -15,51 +15,54 @@ chrome.runtime.onInstalled.addListener((details) => {
   });
   sendAnalyticsEvent('extension_installed');
   updateBadge();
-  // Open options page automatically on install
   if (details.reason === 'install') {
     chrome.runtime.openOptionsPage();
   }
 });
 
-// Set badge background color
 chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
 
-// Restore stats on startup
-chrome.runtime.onStartup.addListener(loadDataFromStorage);
-
-// Main click logic: toolbar icon
+// Handle toolbar icon click
 chrome.action.onClicked.addListener(() => {
   registerClick('toolbar');
 });
 
-// Message from options page: icon click
+// Handle icon click from options page
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message && message.type === 'icon_click') {
     registerClick('options');
     sendResponse({ ok: true });
+  } else if (message && message.type === 'reset_stats') {
+    resetStats();
+    sendResponse({ ok: true });
   }
 });
 
-// Handle context menu: open options page
+// Handle context menu
 chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId === "openOptions") {
     chrome.runtime.openOptionsPage();
   }
 });
 
-// Save and update stats for a click
 function registerClick(from) {
   clickCount++;
   const now = Date.now();
   clickTimestamps.push(now);
 
-  // Limit clickTimestamps size for performance
-  if (clickTimestamps.length > 5000) {
-    clickTimestamps = clickTimestamps.slice(-1000);
-  }
+  // Remove timestamps older than 10 seconds (to avoid memory leak)
+  clickTimestamps = clickTimestamps.filter(ts => ts > now - 10000);
 
-  // Calculate click speed in last second
-  const speed = clickTimestamps.filter(t => t > now - 1000).length;
+  // Calculate true speed (clicks per second with precision)
+  const recent = clickTimestamps.filter(ts => ts > now - 1000);
+  let speed = 0;
+  if (recent.length > 1) {
+    const timeWindow = (recent[recent.length - 1] - recent[0]) / 1000;
+    speed = timeWindow > 0 ? (recent.length - 1) / timeWindow : recent.length;
+  } else {
+    speed = recent.length;
+  }
+  speed = Number(speed.toFixed(2));
   if (speed > maxSpeed) maxSpeed = speed;
 
   chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed });
@@ -67,13 +70,11 @@ function registerClick(from) {
   sendAnalyticsEvent('click', { speed, total_clicks: clickCount, from });
 }
 
-// Update the badge with current click count
 function updateBadge() {
   const displayCount = clickCount > 999 ? '999+' : clickCount.toString();
   chrome.action.setBadgeText({ text: displayCount });
 }
 
-// Restore stats from local storage
 function loadDataFromStorage() {
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], (result) => {
     clickCount = result.clickCount || 0;
@@ -81,4 +82,14 @@ function loadDataFromStorage() {
     maxSpeed = result.maxSpeed || 0;
     updateBadge();
   });
+}
+
+// Reset all stats (when "reset" is clicked)
+function resetStats() {
+  clickCount = 0;
+  maxSpeed = 0;
+  clickTimestamps = [];
+  chrome.storage.local.set({ clickCount: 0, clickTimestamps: [], maxSpeed: 0 });
+  updateBadge();
+  sendAnalyticsEvent('reset_stats', {});
 }
