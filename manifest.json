@@ -1,6 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Clicker toolbar challenge",
+  "short_name": "Clicker_RB",
+  "author": "Roman Babuntc",
+  "homepage_url": "https://yourdomain.com/privacy.html",
   "version": "1.0",
   "description": "Always-on clicker game with stats",
   "permissions": [
