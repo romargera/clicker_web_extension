@@ -90,3 +90,7 @@ chrome.runtime.onStartup.addListener(() => {
     updateBadge(result.clickCount || 0);
   });
 });
+
+chrome.runtime.onInstalled.addListener(() => {
+  sendAnalyticsEvent('debug_test', { manual: true });
+});
