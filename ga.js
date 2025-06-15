@@ -1,6 +1,31 @@
-importScripts('ga.js');
+// background.js – Click tracking logic with GA4 Measurement Protocol
 
-// Initialize click state
+const measurementId = 'G-LYTXW6HDHF';
+const apiSecret = 'hz-x7LxLSFGLranZorF6Ww';
+const clientIdKey = 'ga_client_id';
+
+function sendAnalyticsEvent(name, params = {}) {
+  chrome.storage.local.get(clientIdKey, (result) => {
+    let clientId = result[clientIdKey];
+    if (!clientId) {
+      clientId = crypto.randomUUID();
+      chrome.storage.local.set({ [clientIdKey]: clientId });
+    }
+
+    const payload = {
+      client_id: clientId,
+      events: [{ name, params }]
+    };
+
+    fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(res => console.log(`GA4 Event '${name}' sent:`, res.status))
+      .catch(err => console.warn(`GA4 Event '${name}' failed:`, err));
+  });
+}
+
 let clickCount = 0;
 let clickTimestamps = [];
 let maxSpeed = 0;
@@ -10,12 +35,10 @@ let uniqueID;
 let dailySessions = [];
 let dailyClicksSessions = [];
 
-// Load storage data on startup
 chrome.runtime.onStartup.addListener(() => {
   loadDataFromStorage();
 });
 
-// On install create menu + log event
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "openOptions",
@@ -25,12 +48,12 @@ chrome.runtime.onInstalled.addListener(() => {
   sendAnalyticsEvent('extension_installed');
 });
 
-// Handle toolbar click
 chrome.action.onClicked.addListener(() => {
   clickCount++;
   unsavedClickCount++;
   const now = Date.now();
   clickTimestamps.push(now);
+
   updateDailySessions(now);
 
   const speed = calculateCurrentSpeed();
@@ -47,14 +70,12 @@ chrome.action.onClicked.addListener(() => {
   sendAnalyticsEvent('click', { speed, total_clicks: clickCount });
 });
 
-// Open options from context menu
 chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId === "openOptions") {
     chrome.runtime.openOptionsPage();
   }
 });
 
-// Load values from local storage
 function loadDataFromStorage() {
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed', 'dailySessions', 'dailyClicksSessions'], (result) => {
     clickCount = result.clickCount || 0;
@@ -65,7 +86,6 @@ function loadDataFromStorage() {
   });
 }
 
-// Track daily sessions
 function updateDailySessions(currentTime) {
   const today = new Date().toDateString();
   const lastSession = dailySessions[dailySessions.length - 1];
@@ -79,7 +99,6 @@ function updateDailySessions(currentTime) {
   }
 }
 
-// Compute speed
 function calculateCurrentSpeed() {
   const now = Date.now();
   const oneSecondAgo = now - 1000;
@@ -87,12 +106,10 @@ function calculateCurrentSpeed() {
   return recentClicks.length;
 }
 
-// Save data to local storage
 function saveDataToStorage() {
   chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed, dailySessions, dailyClicksSessions });
 }
 
-// Backup save on interval
 setInterval(() => {
   if (unsavedClickCount > 0) {
     saveDataToStorage();

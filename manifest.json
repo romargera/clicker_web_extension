@@ -1,32 +1,41 @@
 {
   "manifest_version": 3,
-  "name": "Clicker toolbar challenge",
-  "short_name": "Clicker_RB",
-  "author": "Roman Babuntc",
-  "homepage_url": "https://yourdomain.com/privacy.html",
+  "name": "Clicker Challenge",
   "version": "1.0",
-  "description": "Always-on clicker game with stats",
+  "description": "Test your speed by clicking the toolbar icon! Track your fastest clicking speed and total clicks.",
   "permissions": [
     "storage",
     "contextMenus"
   ],
   "action": {
-    "default_icon": "icons/icon1.png"
-  },
-  "options_page": "onboarding.html",
-  "content_scripts": [
-    {
-      "matches": ["https://example.com/*"],  
-      "js": ["content.js"]
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon1.png",
+      "32": "icon1.png",
+      "48": "icon1.png",
+      "128": "icon1.png"
     }
-  ],
+  },
   "background": {
     "service_worker": "background.js"
   },
-  "options_page": "options.html",
+  "host_permissions": [
+    "https://www.google-analytics.com/"
+  ],
   "icons": {
-    "16": "icons/icon1.png",
-    "48": "icons/icon1.png",
-    "128": "icons/icon1.png"
+    "16": "icon1.png",
+    "32": "icon1.png",
+    "48": "icon1.png",
+    "128": "icon1.png"
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["icon1.png"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
   }
 }

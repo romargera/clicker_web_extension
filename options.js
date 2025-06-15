@@ -1,40 +1,27 @@
+importScripts('ga.js');
+
 document.addEventListener('DOMContentLoaded', () => {
-  // Load the selected icon from storage when the options page is opened
-  chrome.storage.sync.get('selectedIcon', (data) => {
-    if (data.selectedIcon) {
-      // Add 'selected' class to the current selected icon
-      const selectedImg = document.querySelector(`img[src="${data.selectedIcon}"]`);
-      if (selectedImg) {
-        selectedImg.classList.add('selected');
-      }
-    }
+  const uploader = document.getElementById('imageUploader');
+  const preview = document.getElementById('previewImage');
+
+  // Load saved icon
+  chrome.storage.local.get('clickImage', ({ clickImage }) => {
+    if (clickImage) preview.src = clickImage;
   });
 
-  // Allow users to select an icon by clicking on it
-  const icons = document.querySelectorAll('.icon-choice img');
-  icons.forEach(icon => {
-    icon.addEventListener('click', () => {
-      // Remove 'selected' class from all icons
-      icons.forEach(i => i.classList.remove('selected'));
+  uploader.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-      // Add 'selected' class to the clicked icon
-      icon.classList.add('selected');
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const imageDataUrl = e.target.result;
+      preview.src = imageDataUrl;
 
-      // Save the selected icon in chrome.storage.sync
-      const selectedIcon = icon.getAttribute('src');
-      chrome.storage.sync.set({ selectedIcon });
-    });
-  });
-
-  // Handle the Save button click
-  document.querySelector('.save-button').addEventListener('click', () => {
-    // Get the currently selected icon
-    const selectedIcon = document.querySelector('.icon-choice img.selected').getAttribute('src');
-
-    // Set the extension icon dynamically
-    chrome.action.setIcon({ path: selectedIcon });
-
-    // Notify the user
-    alert('Icon updated!');
+      chrome.storage.local.set({ clickImage: imageDataUrl }, () => {
+        sendAnalyticsEvent('image_changed');
+      });
+    };
+    reader.readAsDataURL(file);
   });
 });

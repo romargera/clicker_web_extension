@@ -1,78 +1,81 @@
+const measurementId = 'G-LYTXW6HDHF';
+const apiSecret = 'hz-x7LxLSFGLranZorF6Ww';
+const clientIdKey = 'ga_client_id';
+
+function sendAnalyticsEvent(name, params = {}) {
+  chrome.storage.local.get(clientIdKey, (result) => {
+    let clientId = result[clientIdKey];
+    if (!clientId) {
+      clientId = crypto.randomUUID();
+      chrome.storage.local.set({ [clientIdKey]: clientId });
+    }
+
+    const payload = {
+      client_id: clientId,
+      events: [{ name, params }]
+    };
+
+    fetch(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}&api_secret=${apiSecret}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(res => console.log(`GA4 Event '${name}' sent:`, res.status))
+      .catch(err => console.warn(`GA4 Event '${name}' failed:`, err));
+  });
+}
+
 let clickTimestamps = [];
 let totalClicks = 0;
 let maxSpeed = 0;
 let speedUpdateInterval = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Load saved clicks, timestamps, and max speed
+  sendAnalyticsEvent('popup_opened');
+
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], (result) => {
     totalClicks = result.clickCount || 0;
-    clickTtimestamps = result.clickTimestamps || [];
-    maxSpeed = result.maxSpeed || 0;  // Load saved max speed
-    
+    clickTimestamps = result.clickTimestamps || [];
+    maxSpeed = result.maxSpeed || 0;
+
     document.getElementById('totalClicks').textContent = totalClicks;
     document.getElementById('maxSpeed').textContent = maxSpeed;
 
-    // Start the frequent update for click speed
     startSpeedUpdate();
   });
 
-  // Only count clicks in the main click area
   document.body.addEventListener('click', (event) => {
     const target = event.target;
+    const nonCountable = ['BUTTON', 'A', 'INPUT', 'TEXTAREA'];
+    if (nonCountable.includes(target.tagName) || target.closest('.ignore-clicks')) return;
 
-    // List of elements we want to exclude from counting clicks
-    const nonCountableElements = ['BUTTON', 'A', 'INPUT', 'TEXTAREA'];
-
-    // Ignore clicks on buttons, links, and any elements with the 'ignore-clicks' class
-    if (nonCountableElements.includes(target.tagName) || target.closest('.ignore-clicks')) {
-      return; // Do not count the click
-    }
-
-    // Register the click
     totalClicks++;
     clickTimestamps.push(Date.now());
 
-    // Save the updated click count and timestamps in storage
     chrome.storage.local.set({ clickCount: totalClicks, clickTimestamps });
-
-    // Update the total clicks display
     document.getElementById('totalClicks').textContent = totalClicks;
   });
 
-  // Stop speed calculation when the page is closed or inactive
   window.addEventListener('beforeunload', () => {
-    if (speedUpdateInterval) {
-      clearInterval(speedUpdateInterval);
-    }
+    if (speedUpdateInterval) clearInterval(speedUpdateInterval);
   });
 });
 
-// Function to start the frequent update for click speed
 function startSpeedUpdate() {
-  // Update the click speed every second
-  speedUpdateInterval = setInterval(() => {
-    updateClickSpeed();
-  }, 1000); // Updates every second
+  speedUpdateInterval = setInterval(updateClickSpeed, 1000);
 }
 
 function updateClickSpeed() {
   const now = Date.now();
-  const oneSecondAgo = now - 1000;  // Time 1 second ago
+  const recentClicks = clickTimestamps.filter(t => t > now - 1000);
+  const speed = recentClicks.length;
 
-  // Filter clicks that occurred within the last second
-  const recentClicks = clickTimestamps.filter(timestamp => timestamp > oneSecondAgo);
-  const clicksInLastSecond = recentClicks.length;
-
-  // Update max speed (max clicks per second)
-  if (clicksInLastSecond > maxSpeed) {
-    maxSpeed = clicksInLastSecond;
-    chrome.storage.local.set({ maxSpeed }); // Save the new max speed
+  if (speed > maxSpeed) {
+    maxSpeed = speed;
+    chrome.storage.local.set({ maxSpeed });
+    sendAnalyticsEvent('max_speed_updated', { speed: maxSpeed });
   }
 
-  // Update only if there were clicks in the last second
-  if (clicksInLastSecond > 0) {
-    // Update the UI with max speed
+  if (speed > 0) {
     document.getElementById('maxSpeed').textContent = maxSpeed;
   }
 }
