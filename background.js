@@ -8,10 +8,10 @@ const SAVE_INTERVAL = 10;
 let dailySessions = [];
 let dailyClicksSessions = [];
 
-// Set badge background color (blue)
+// Set badge background color
 chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
 
-// On startup or install, load stats, set menu, and badge
+// Load stats and initialize badge on startup/install
 chrome.runtime.onStartup.addListener(loadDataFromStorage);
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -23,12 +23,12 @@ chrome.runtime.onInstalled.addListener(() => {
   updateBadge();
 });
 
-// Left click on toolbar icon
+// Count click when user left-clicks extension icon
 chrome.action.onClicked.addListener(() => {
   handleClick('toolbar');
 });
 
-// Click from options page icon
+// Count click when user clicks extension icon in options page
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message && message.type === 'icon_click') {
     handleClick('options');
@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Main click handler: update stats and send event to GA4
 function handleClick(origin) {
   clickCount++;
   unsavedClickCount++;
@@ -55,11 +56,13 @@ function handleClick(origin) {
   sendAnalyticsEvent('click', { speed, total_clicks: clickCount, from: origin });
 }
 
+// Update extension badge with click count
 function updateBadge() {
   const displayCount = clickCount > 999 ? '999+' : clickCount.toString();
   chrome.action.setBadgeText({ text: displayCount });
 }
 
+// Load all stats from local storage
 function loadDataFromStorage() {
   chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed', 'dailySessions', 'dailyClicksSessions'], (result) => {
     clickCount = result.clickCount || 0;
@@ -71,6 +74,7 @@ function loadDataFromStorage() {
   });
 }
 
+// Track new day sessions for stats
 function updateDailySessions(currentTime) {
   const today = new Date().toDateString();
   const lastSession = dailySessions[dailySessions.length - 1];
@@ -84,15 +88,18 @@ function updateDailySessions(currentTime) {
   }
 }
 
+// Calculate click speed (clicks per second)
 function calculateCurrentSpeed() {
   const now = Date.now();
   return clickTimestamps.filter(t => t > now - 1000).length;
 }
 
+// Save stats to local storage
 function saveDataToStorage() {
   chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed, dailySessions, dailyClicksSessions });
 }
 
+// Periodically save unsaved click stats
 setInterval(() => {
   if (unsavedClickCount > 0) {
     saveDataToStorage();
