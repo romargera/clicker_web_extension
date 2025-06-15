@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // GA4 event: options page opened
+  sendAnalyticsEvent('options_opened', { page: 'options' });
+
   const totalClicksEl = document.getElementById('totalClicks');
   const maxSpeedEl = document.getElementById('maxSpeed');
   const iconClickArea = document.getElementById('iconClickArea');
@@ -32,18 +35,20 @@ document.addEventListener('DOMContentLoaded', () => {
     iconClickArea.style.transform = '';
   });
 
-  // Click handler (via background)
+  // Click handler (via background) + GA4 event for icon click
   iconClickArea.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'icon_click' });
+    // GA4: user clicked icon on options page
+    sendAnalyticsEvent('icon_click_on_options', { source: 'options' });
   });
 
-  // Reset stats handler
+  // Reset stats handler + GA4 event for reset
   resetLink.addEventListener('click', (e) => {
     e.preventDefault();
     if (confirm('Are you sure you want to reset your stats?')) {
       chrome.runtime.sendMessage({ type: 'reset_stats' }, (resp) => {
         if (resp && resp.ok) {
-          // UI will auto-update by next interval
+          sendAnalyticsEvent('reset_stats', { source: 'options' });
         }
       });
     }
