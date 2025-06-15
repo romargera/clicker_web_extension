@@ -16,7 +16,7 @@
     "48": "icons/icon1.png",
     "128": "icons/icon1.png"
   },
-  "action": {},  // No popup
+  "action": {},  // no popup!
   "host_permissions": [
     "https://www.google-analytics.com/"
   ],

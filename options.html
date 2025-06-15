@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Clicker Challenge</title>
+  <title>Options (clicker page)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -40,7 +40,8 @@
       justify-content: center;
       box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
       transition: transform .15s;
-      cursor: default;
+      cursor: pointer;
+      position: relative;
     }
     .icon-preview img {
       width: 60px;
@@ -50,81 +51,88 @@
     h1 {
       color: #1653c2;
       font-size: 2.2em;
-      margin: 0 0 6px 0;
+      margin: 0 0 14px 0;
       font-weight: bold;
       letter-spacing: -1px;
       text-align: center;
     }
-    .stats {
+    .metrics-table {
       width: 100%;
-      margin-top: 18px;
-      margin-bottom: 10px;
+      margin-top: 10px;
+      margin-bottom: 6px;
       background: #f6f9fe;
       border-radius: 14px;
-      padding: 18px 0 14px 0;
+      padding: 10px 0 10px 0;
       text-align: center;
       box-shadow: 0 1px 5px rgba(50,115,220,0.03);
       font-size: 1.18em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .stats-label {
+    .metrics-row {
+      display: flex;
+      width: 90%;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+    }
+    .metrics-label {
       color: #6c8ebf;
       font-weight: 500;
       font-size: 1em;
-      margin: 0;
-      letter-spacing: .5px;
+      text-align: left;
     }
-    .stats-value {
+    .metrics-value {
       font-size: 1.5em;
       font-weight: bold;
-      margin: 0 0 6px 0;
       color: #244aad;
       letter-spacing: 0.5px;
-      display: inline-block;
       min-width: 36px;
+      text-align: right;
     }
     .tip {
       color: #b5b5b5;
       margin-top: 14px;
-      font-size: 0.98em;
+      font-size: 1em;
       text-align: center;
       letter-spacing: .2px;
     }
-    .button-link {
-      background: #1653c2;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 22px;
-      font-size: 1.1em;
-      margin-top: 26px;
-      cursor: pointer;
+    .feedback-link {
+      display: inline-block;
+      margin-top: 24px;
+      color: #1653c2;
       font-weight: 500;
-      transition: background 0.18s, transform 0.13s;
-      box-shadow: 0 1px 6px 0 rgba(22,83,194,0.09);
+      text-decoration: none;
+      font-size: 1.07em;
+      transition: color .17s;
     }
-    .button-link:hover {
-      background: #2e73ec;
-      transform: translateY(-2px) scale(1.03);
+    .feedback-link:hover {
+      color: #2e73ec;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="icon-preview">
+    <div class="icon-preview" id="iconClickArea" title="Click me!">
       <img src="icons/icon1.png" alt="Extension icon">
     </div>
-    <h1>Clicker Challenge</h1>
-    <div class="stats">
-      <p class="stats-label">Total Clicks</p>
-      <span class="stats-value" id="totalClicks">0</span>
-      <p class="stats-label">Max Speed</p>
-      <span class="stats-value" id="maxSpeed">0</span> <span class="stats-label">clicks/sec</span>
+    <h1>Options (clicker page)</h1>
+    <div class="metrics-table">
+      <div class="metrics-row">
+        <span class="metrics-label">Total clicks, qty</span>
+        <span class="metrics-value" id="totalClicks">0</span>
+      </div>
+      <div class="metrics-row">
+        <span class="metrics-label">Max speed, clicks/sec</span>
+        <span class="metrics-value" id="maxSpeed">0</span>
+      </div>
     </div>
     <div class="tip">
-      Click the extension icon in the toolbar to increase your score!<br>
-      Your progress is saved locally.
+      Click the extension icon in the toolbar or the icon above to increase your score!
     </div>
-    <button class="button-link" onclick="chrome.runtime.openOptionsPage()">Settings</button>
+    <a class="feedback-link" href="mailto:always2apps@gmail.com?subject=Clicker%20Extension%20Feedback">Send feedback</a>
   </div>
   <script src="ga.js"></script>
   <script src="options.js"></script>
