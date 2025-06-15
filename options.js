@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconClickCount = document.getElementById('iconClickCount');
   const hoverDialog = document.getElementById('hoverDialog');
   let hoverDialogShown = false;
-  let clickCountSession = 0;
 
   // Show "click me" hover dialog only once for 3s, then never again
   if (!localStorage.getItem('iconHoverDialogHidden')) {
@@ -32,21 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
     iconClickArea.style.transform = '';
   });
 
-  // Register click via background, update click badge
+  // Register click via background
   iconClickArea.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'icon_click' }, (resp) => {
-      if (resp && resp.ok) {
-        clickCountSession++;
-        iconClickCount.textContent = clickCountSession;
-      }
-    });
+    chrome.runtime.sendMessage({ type: 'icon_click' });
+    // (No session counter, just update total on next interval)
   });
 
   // Update displayed stats every 0.1s for live sync
   setInterval(() => {
     chrome.storage.local.get(['clickCount', 'maxSpeed'], (result) => {
-      totalClicksEl.textContent = result.clickCount || 0;
-      maxSpeedEl.textContent = result.maxSpeed || 0;
+      const clicks = result.clickCount || 0;
+      const speed = (result.maxSpeed || 0).toFixed(2);
+      totalClicksEl.textContent = clicks;
+      iconClickCount.textContent = clicks; // sync badge with total clicks
+      maxSpeedEl.textContent = speed;
     });
   }, 100);
 });
