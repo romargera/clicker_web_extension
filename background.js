@@ -11,8 +11,8 @@ const COOKIE_NAME = 'user_id';  // Name of the cookie to use as the unique ID
 // Use the unique ID from a cookie if available, otherwise don't generate any ID
 chrome.cookies.getAll({ name: COOKIE_NAME }, (cookies) => {
   if (cookies.length > 0) {
-    uniqueID = cookies[0].value;  // Use the cookie value as the unique ID
-    console.log('Unique ID from cookie:', uniqueID);
+    uniqueID = crypto.randomUUID();
+    chrome.storage.local.set({ uniqueID });
   } else {
     console.log('No unique ID found in cookies');
   }

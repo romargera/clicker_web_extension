@@ -15,3 +15,10 @@ const pageData = {
     // You can send click data as well if needed
     chrome.runtime.sendMessage({ element: event.target.tagName, time: Date.now() });
   });
+
+  chrome.storage.local.get('clickImage', ({ clickImage }) => {
+    if (clickImage) {
+      const img = document.querySelector('img'); // или по id
+      if (img) img.src = clickImage;
+    }
+  });

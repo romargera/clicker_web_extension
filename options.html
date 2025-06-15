@@ -82,6 +82,43 @@
     <h3>Note: Reload this page if you have clicked more.</h3>
   </div>
 
+  <!-- Choose an image -->
+<div class="section">
+  <h2>Custom Click Image</h2>
+  <input type="file" id="imageUploader" accept="image/*">
+  <p>Current image preview:</p>
+  <img id="previewImage" style="max-width: 100%; max-height: 200px;" />
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const uploader = document.getElementById('imageUploader');
+    const preview = document.getElementById('previewImage');
+  
+    // Загрузить сохраненное изображение
+    chrome.storage.local.get('clickImage', ({ clickImage }) => {
+      if (clickImage) preview.src = clickImage;
+    });
+  
+    uploader.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageDataUrl = e.target.result;
+        preview.src = imageDataUrl;
+  
+        chrome.storage.local.set({ clickImage: imageDataUrl }, () => {
+          alert('Картинка сохранена!');
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+  </script>
+
+
   <!-- New Section: Reload, Feedback, and Share -->
   <div class="section">
     <!-- <h2>Note: Reload this page if you have clicked more</h2> -->
@@ -101,5 +138,7 @@
     });
   </script>
   
+  <button class="button" onclick="location.reload()">🔄 Reload</button>
+
 </body>
 </html>
