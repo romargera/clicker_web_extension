@@ -1,37 +1,33 @@
-# Clicker Challenge Extension
+# Clicker Challenge — Chrome Extension
 
-Clicker Challenge is a Chrome extension that tracks how fast and how often you can click the browser toolbar icon. It stores your click stats and lets you track your maximum click speed over time.
+Clicker Challenge is a simple yet addictive Chrome extension that helps you track your clicking speed and total clicks right from your browser toolbar. Challenge yourself and your friends — see how fast you can click!
 
 ## Features
 
-- 🔘 Click the extension icon to record clicks
-- 🧠 Tracks speed (clicks per second)
-- 🏆 See your max speed and total clicks in a popup
-- 🎨 Upload your own image to personalize the challenge
-- 📊 Events tracked via Google Analytics 4
+- **One-click counter:** Click the extension icon in the Chrome toolbar or the hamster icon on the options page to increase your score.
+- **Live stats:** View your total clicks and record max speed (clicks per second), updated in real-time.
+- **Sleek design:** Minimal, animated, and responsive UI.
+- **Google Analytics 4 integration:** All important events (clicks, sessions, resets) are tracked for product improvement.
+- **Privacy first:** No personal data is ever collected or shared.
 
-## Installation
+## How to use
 
-1. Clone or download this repository
-2. Go to `chrome://extensions`
-3. Enable "Developer mode"
-4. Click "Load unpacked" and select this folder
+1. Install the extension from the Chrome Web Store.
+2. Pin the extension to your toolbar for easy access.
+3. Click the extension icon or open the options page for full stats.
+4. Try to beat your max speed!
 
 ## Privacy
 
-No personal information is collected. All analytics are anonymous and use a random UUID per device.
+- The extension does **not** collect or store any personal information.
+- All analytics are anonymous and used exclusively for product improvement.
+- [Read the privacy policy](#) for more details.
 
-## Analytics
+## Feedback
 
-This extension uses [Google Analytics 4 Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/ga4) to track:
-- `extension_installed`
-- `popup_opened`
-- `click`
-- `max_speed_updated`
-- `image_changed`
+Found a bug or have a suggestion?  
+Email us: always2apps@gmail.com
 
-All data is anonymous and used solely to understand how the extension is used.
+---
 
-## License
-
-MIT License
+_Developed with ❤️._  
