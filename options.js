@@ -7,9 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let hoverDialogShown = false;
   let clickCountSession = 0;
 
-  // Instruction moved under h1 in HTML
-
-  // 3s hover-once logic
+  // Show "click me" hover dialog only once for 3s, then never again
   if (!localStorage.getItem('iconHoverDialogHidden')) {
     iconClickArea.addEventListener('mouseenter', () => {
       if (!hoverDialogShown) {
@@ -23,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Instant feedback on click (fast animation)
+  // Animate icon press
   iconClickArea.addEventListener('mousedown', () => {
     iconClickArea.style.transform = 'scale(0.91)';
   });
@@ -34,35 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
     iconClickArea.style.transform = '';
   });
 
-  // Count click on icon, update stats and badge
+  // Register click via background, update click badge
   iconClickArea.addEventListener('click', () => {
-    chrome.storage.local.get(['clickCount', 'clickTimestamps', 'maxSpeed'], (result) => {
-      let clickCount = result.clickCount || 0;
-      let clickTimestamps = result.clickTimestamps || [];
-      let maxSpeed = result.maxSpeed || 0;
-
-      clickCount++;
-      clickCountSession++;
-      iconClickCount.textContent = clickCountSession;
-
-      const now = Date.now();
-      clickTimestamps.push(now);
-
-      const recent = clickTimestamps.filter(t => t > now - 1000);
-      const speed = recent.length;
-      if (speed > maxSpeed) maxSpeed = speed;
-
-      chrome.storage.local.set({ clickCount, clickTimestamps, maxSpeed }, () => {
-        // UI will auto-update via interval
-      });
-
-      if (typeof sendAnalyticsEvent === 'function') {
-        sendAnalyticsEvent('click', { speed, total_clicks: clickCount, from: 'options' });
+    chrome.runtime.sendMessage({ type: 'icon_click' }, (resp) => {
+      if (resp && resp.ok) {
+        clickCountSession++;
+        iconClickCount.textContent = clickCountSession;
       }
     });
   });
 
-  // Update all stats every 0.1s
+  // Update displayed stats every 0.1s for live sync
   setInterval(() => {
     chrome.storage.local.get(['clickCount', 'maxSpeed'], (result) => {
       totalClicksEl.textContent = result.clickCount || 0;
