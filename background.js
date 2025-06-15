@@ -6,6 +6,20 @@ let maxSpeed = 0;
 let unsavedClickCount = 0;
 const SAVE_INTERVAL = 10;
 
+// Open Options once installed
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: "openOptions",
+    title: "Clicker challenge",
+    contexts: ["action"]
+  });
+  sendAnalyticsEvent('extension_installed');
+  updateBadge();
+
+  // Open options page on install
+  chrome.runtime.openOptionsPage();
+});
+
 // Set badge color
 chrome.action.setBadgeBackgroundColor({ color: '#1976d2' });
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Options (clicker page)</title>
+  <title>Clicker challenge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -24,6 +24,7 @@
       flex-direction: column;
       align-items: center;
       transition: box-shadow .2s;
+      position: relative;
     }
     .card:hover {
       box-shadow: 0 10px 40px 0 rgba(50,115,220,0.25);
@@ -39,22 +40,77 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
-      transition: transform .15s;
+      transition: transform .12s;
       cursor: pointer;
       position: relative;
+      user-select: none;
+      outline: none;
     }
     .icon-preview img {
       width: 60px;
       height: 60px;
       display: block;
+      pointer-events: none;
+      user-select: none;
+    }
+    .icon-preview:active {
+      animation: icon-bounce 0.13s;
+    }
+    @keyframes icon-bounce {
+      0% { transform: scale(1); }
+      40% { transform: scale(0.87); }
+      100% { transform: scale(1); }
+    }
+    .hover-dialog {
+      position: absolute;
+      top: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1976d2;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 1em;
+      font-weight: 500;
+      box-shadow: 0 2px 12px 0 rgba(20,50,100,0.08);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .icon-preview.show-hover .hover-dialog {
+      opacity: 1;
+    }
+    .click-count-badge {
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      background: #1976d2;
+      color: #fff;
+      font-size: 1em;
+      font-weight: 700;
+      padding: 2px 10px 2px 10px;
+      border-radius: 999px;
+      box-shadow: 0 1px 5px 0 rgba(25,118,210,0.15);
+      pointer-events: none;
+      min-width: 32px;
+      text-align: center;
     }
     h1 {
       color: #1653c2;
       font-size: 2.2em;
-      margin: 0 0 14px 0;
+      margin: 0 0 10px 0;
       font-weight: bold;
       letter-spacing: -1px;
       text-align: center;
+    }
+    .tip {
+      color: #6c8ebf;
+      font-size: 1em;
+      text-align: center;
+      letter-spacing: .2px;
+      margin-bottom: 12px;
     }
     .metrics-table {
       width: 100%;
@@ -91,16 +147,9 @@
       min-width: 36px;
       text-align: right;
     }
-    .tip {
-      color: #b5b5b5;
-      margin-top: 14px;
-      font-size: 1em;
-      text-align: center;
-      letter-spacing: .2px;
-    }
     .feedback-link {
       display: inline-block;
-      margin-top: 24px;
+      margin-top: 20px;
       color: #1653c2;
       font-weight: 500;
       text-decoration: none;
@@ -116,9 +165,14 @@
 <body>
   <div class="card">
     <div class="icon-preview" id="iconClickArea" title="Click me!">
+      <span class="hover-dialog" id="hoverDialog">click me</span>
       <img src="icons/icon1.png" alt="Extension icon">
+      <span class="click-count-badge" id="iconClickCount">0</span>
     </div>
-    <h1>Options (clicker page)</h1>
+    <h1>Clicker challenge</h1>
+    <div class="tip" id="tipInstruction">
+      Click the extension icon in the toolbar or the icon above to increase your score!
+    </div>
     <div class="metrics-table">
       <div class="metrics-row">
         <span class="metrics-label">Total clicks, qty</span>
@@ -128,9 +182,6 @@
         <span class="metrics-label">Max speed, clicks/sec</span>
         <span class="metrics-value" id="maxSpeed">0</span>
       </div>
-    </div>
-    <div class="tip">
-      Click the extension icon in the toolbar or the icon above to increase your score!
     </div>
     <a class="feedback-link" href="mailto:always2apps@gmail.com?subject=Clicker%20Extension%20Feedback">Send feedback</a>
   </div>
