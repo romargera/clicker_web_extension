@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Clicker Challenge",
+  "name": "Toolbar Clicker Challenge",
   "version": "1.0",
-  "description": "Test your speed by clicking the toolbar icon! Track your fastest clicking speed and total clicks.",
+  "description": "Challenge your clicking speed in your browser toolbar or on a special stats page",
   "permissions": [
     "storage",
     "contextMenus"
