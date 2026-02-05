@@ -2,6 +2,8 @@
 
 Clicker Challenge is a simple yet addictive Chrome extension that helps you track your clicking speed and total clicks right from your browser toolbar. Challenge yourself and your friends — see how fast you can click!
 
+[![Watch the video](https://img.youtube.com/vi/Q2WVWRJNHuU/0.jpg)](https://www.youtube.com/watch?v=Q2WVWRJNHuU)
+
 ## Features
 
 - **One-click counter:** Click the extension icon in the Chrome toolbar or the hamster icon on the options page to increase your score.
