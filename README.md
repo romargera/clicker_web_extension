@@ -12,7 +12,7 @@ Clicker Challenge is a simple yet addictive Chrome extension that helps you trac
 
 ## How to use
 
-1. Install the extension from the Chrome Web Store.
+1. [Install the extension from the Chrome Web Store](https://chromewebstore.google.com/detail/toolbar-clicker-challenge/dgjmggljccjnnfdeecfjlaanplabnfcf?pli=1)
 2. Pin the extension to your toolbar for easy access.
 3. Click the extension icon or open the options page for full stats.
 4. Try to beat your max speed!
